@@ -1,9 +1,10 @@
-package com.ahmed_apps.rental_cars_ui
+package com.ankit.rental_cars_ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,9 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ahmed_apps.rental_cars_ui.ui.theme.RentalCarsUITheme
-import com.ahmed_apps.rental_cars_ui.ui.theme.Secondary
-import dev.chrisbanes.haze.haze
+import com.ahmed_apps.rental_cars_ui.R
+import com.ankit.rental_cars_ui.ui.theme.RentalCarsUITheme
+import com.ankit.rental_cars_ui.ui.theme.Secondary
 
 /**
  * @author Ahmed Guedmioui
@@ -43,13 +44,15 @@ import dev.chrisbanes.haze.haze
 @Composable
 fun CarItem(
     modifier: Modifier = Modifier,
-    car: Car
+    car: Car,
+    onCarClick: (Car) -> Unit = {}
 ) {
     Box(
         modifier = modifier
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(40.dp))
             .background(car.bgColor)
+            .clickable { onCarClick(car) }
     ) {
         Image(
             painter = painterResource(car.image),

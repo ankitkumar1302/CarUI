@@ -1,4 +1,4 @@
-package com.ahmed_apps.rental_cars_ui
+package com.ankit.rental_cars_ui
 
 import org.junit.Test
 

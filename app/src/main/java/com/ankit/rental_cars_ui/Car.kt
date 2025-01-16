@@ -1,11 +1,16 @@
-package com.ahmed_apps.rental_cars_ui
+package com.ankit.rental_cars_ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
+import com.ahmed_apps.rental_cars_ui.R
+import com.ankit.rental_cars_ui.ui.theme.Primary
+import com.ankit.rental_cars_ui.ui.theme.Secondary
 
+/**
+ * @author Ahmed Guedmioui
+ */
 data class Car(
     val name: String,
-    val brand: String,
     @DrawableRes val image: Int,
     val color: Color,
     @DrawableRes val logo: Int,
@@ -14,16 +19,13 @@ data class Car(
     val rentalDays: Int,
     val price: Int,
     val recommenders: List<Int>,
-    val bgColor: Color,
-    val seats: Int = 4,
-    val engineType: String = "Automatic",
-    val rating: Float = 4.5f
+    val bgColor: Color
 )
+
 
 val luxuriousCars = listOf(
     Car(
         name = "Ferrari SF90 Stradale",
-        brand = "Ferrari",
         image = R.drawable.ferrari_car,
         color = Color.Red,
         logo = R.drawable.ferrari_logo,
@@ -34,11 +36,10 @@ val luxuriousCars = listOf(
         recommenders = listOf(
             R.drawable.m_2, R.drawable.w_1, R.drawable.w_2
         ),
-        bgColor = Color(0xFFFFE1B3)
+        bgColor = Primary
     ),
     Car(
         name = "Rolls-Royce Phantom",
-        brand = "Rolls-Royce",
         image = R.drawable.rolls_royce_car,
         color = Color.Black,
         logo = R.drawable.rolls_royce_logo,
@@ -49,11 +50,10 @@ val luxuriousCars = listOf(
         recommenders = listOf(
             R.drawable.m_1, R.drawable.w_2, R.drawable.m_3
         ),
-        bgColor = Color(0xFFd5dcf6)
+        bgColor = Secondary
     ),
     Car(
         name = "Porsche 911 Turbo S",
-        brand = "Porsche",
         image = R.drawable.porsche_car,
         color = Color.Yellow,
         logo = R.drawable.porsche_logo,
@@ -64,14 +64,27 @@ val luxuriousCars = listOf(
         recommenders = listOf(
             R.drawable.m_3, R.drawable.w_1, R.drawable.m_1
         ),
-        bgColor = Color(0xFFFFE1B3)
+        bgColor = Primary
+    ),
+    Car(
+        name = "Lamborghini Aventador",
+        image = R.drawable.lamborghini_car,
+        color = Color.White,
+        logo = R.drawable.lamborghini_logo,
+        recommendation = 97,
+        recommendationRate = 4.9f,
+        rentalDays = 5,
+        price = 649,
+        recommenders = listOf(
+            R.drawable.w_1, R.drawable.w_2, R.drawable.m_2
+        ),
+        bgColor = Secondary
     )
 )
 
 val vipCars = listOf(
     Car(
         name = "Bugatti Chiron",
-        brand = "Bugatti",
         image = R.drawable.ferrari_car,
         color = Color.Blue,
         logo = R.drawable.ferrari_logo,
@@ -82,11 +95,10 @@ val vipCars = listOf(
         recommenders = listOf(
             R.drawable.m_1, R.drawable.w_1, R.drawable.m_2
         ),
-        bgColor = Color(0xFFFFE1B3)
+        bgColor = Primary
     ),
     Car(
         name = "McLaren P1",
-        brand = "McLaren",
         image = R.drawable.porsche_car,
         color = Color.Yellow,
         logo = R.drawable.porsche_logo,
@@ -97,6 +109,6 @@ val vipCars = listOf(
         recommenders = listOf(
             R.drawable.m_2, R.drawable.w_2, R.drawable.m_3
         ),
-        bgColor = Color(0xFFd5dcf6)
+        bgColor = Secondary
     )
-) 
+)

@@ -1,4 +1,4 @@
-package com.ahmed_apps.rental_cars_ui
+package com.ankit.rental_cars_ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,22 +15,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.ahmed_apps.rental_cars_ui.data.SettingsDataStore
-
-import com.ahmed_apps.rental_cars_ui.screens.SettingsScreen
-import com.ahmed_apps.rental_cars_ui.ui.theme.RentalCarsUITheme
-import com.ankit.rental_cars_ui.BottomBar
-import com.ankit.rental_cars_ui.Car
-import com.ankit.rental_cars_ui.CarDetailScreen
-import com.ankit.rental_cars_ui.HomeScreen
-import com.ankit.rental_cars_ui.Pager
-import com.ankit.rental_cars_ui.TopBar
 import com.ankit.rental_cars_ui.screens.AccountScreen
 import com.ankit.rental_cars_ui.screens.AnalyticsScreen
+import com.ankit.rental_cars_ui.screens.SettingsScreen
+import com.ankit.rental_cars_ui.ui.theme.Blur
+import com.ankit.rental_cars_ui.ui.theme.RentalCarsUITheme
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -40,13 +33,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
-        val settingsDataStore = SettingsDataStore(this)
-        
         setContent {
-            val isDarkMode by settingsDataStore.isDarkMode.collectAsState(initial = false)
-            
-            RentalCarsUITheme(darkTheme = isDarkMode) {
+            RentalCarsUITheme {
                 var selectedCar by remember { mutableStateOf<Car?>(null) }
                 var currentScreen by remember { mutableIntStateOf(0) }
                 var isFirstLaunch by remember { mutableStateOf(true) }
@@ -73,15 +61,15 @@ class MainActivity : ComponentActivity() {
                             val (newScreen, _) = targetState
                             val direction = if (newScreen > oldScreen) 1 else -1
 
-                            slideInHorizontally(
+                            (slideInHorizontally(
                                 animationSpec = tween(200, easing = FastOutSlowInEasing)
                             ) { width -> direction * width } + fadeIn(
                                 animationSpec = tween(150)
-                            ) with slideOutHorizontally(
+                            )).togetherWith(slideOutHorizontally(
                                 animationSpec = tween(200, easing = FastOutSlowInEasing)
                             ) { width -> -direction * width } + fadeOut(
                                 animationSpec = tween(150)
-                            )
+                            ))
                         }
                     ) { (screen, car) ->
                         when {
@@ -95,7 +83,6 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                             }
-
                             screen == 0 -> {
                                 Scaffold(
                                     modifier = Modifier
@@ -140,7 +127,6 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             }
-
                             screen == 1 -> {
                                 Surface(
                                     modifier = Modifier.fillMaxSize(),
@@ -149,7 +135,6 @@ class MainActivity : ComponentActivity() {
                                     AccountScreen(hazeState = hazeState)
                                 }
                             }
-
                             screen == 2 -> {
                                 Surface(
                                     modifier = Modifier.fillMaxSize(),
@@ -158,26 +143,18 @@ class MainActivity : ComponentActivity() {
                                     AnalyticsScreen(hazeState = hazeState)
                                 }
                             }
-
                             screen == 3 -> {
                                 Surface(
                                     modifier = Modifier.fillMaxSize(),
                                     color = MaterialTheme.colorScheme.background
                                 ) {
-                                    SettingsScreen(
-                                        hazeState = hazeState,
-                                        isDarkMode = isDarkMode,
-                                        onDarkModeChange = { enabled ->
-                                            coroutineScope.launch {
-                                                settingsDataStore.setDarkMode(enabled)
-                                            }
-                                        }
-                                    )
+                                    SettingsScreen(hazeState = hazeState)
                                 }
                             }
                         }
                     }
 
+                    // Only show bottom bar when not in car detail screen
                     AnimatedVisibility(
                         visible = selectedCar == null,
                         enter = slideInVertically(
@@ -208,4 +185,49 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-} 
+}
+
+@Composable
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    hazeState: HazeState,
+    paddingValues: PaddingValues,
+    isFirstLaunch: Boolean,
+    onCarClick: (Car) -> Unit
+) {
+    Box(
+        modifier = modifier
+    ) {
+        CarList(
+            modifier = Modifier
+                .fillMaxSize()
+                .haze(
+                    state = hazeState,
+                    style = HazeStyle(
+                        blurRadius = 13.dp, tint = Blur
+                    )
+                ),
+            paddingValues = paddingValues,
+            isFirstLaunch = isFirstLaunch,
+            onCarClick = onCarClick
+        )
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

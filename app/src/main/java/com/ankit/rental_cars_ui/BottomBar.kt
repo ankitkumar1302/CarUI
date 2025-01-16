@@ -1,4 +1,4 @@
-package com.ahmed_apps.rental_cars_ui
+package com.ankit.rental_cars_ui
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -111,4 +111,4 @@ val bottomBarItems = listOf(
         title = "Settings",
         icon = Icons.Rounded.Settings
     )
-) 
+)
