@@ -150,3 +150,11 @@ val bottomBarItems = listOf(
     )
 )
 
+@Composable
+@Preview
+fun BottomBarPreview() {
+    BottomBar(
+        onNavigate = {},
+        hazeState = rememberSaveable { HazeState() }
+    )
+}

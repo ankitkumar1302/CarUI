@@ -39,9 +39,6 @@ import com.ankit.rental_cars_ui.domain.model.Car
 import com.ankit.rental_cars_ui.ui.theme.RentalCarsUITheme
 import com.ankit.rental_cars_ui.ui.theme.Secondary
 
-/**
- * @author Ahmed Guedmioui
- */
 @Composable
 fun CarItem(
     modifier: Modifier = Modifier,

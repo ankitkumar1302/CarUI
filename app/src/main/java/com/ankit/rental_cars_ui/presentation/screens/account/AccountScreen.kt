@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeChild
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -240,8 +241,7 @@ private fun ActionItem(
                 imageVector = icon,
                 contentDescription = null,
                 tint = Color.White,
-                modifier = Modifier
-                    .size(24.dp)
+                modifier = Modifier.size(24.dp)
             )
         },
         trailingContent = {
@@ -262,8 +262,7 @@ private fun StatCard(
     hazeState: HazeState
 ) {
     Card(
-        modifier = modifier
-            .hazeChild(hazeState),
+        modifier = modifier.hazeChild(hazeState),
         colors = CardDefaults.cardColors(
             containerColor = Color.White.copy(alpha = 0.1f)
         ),
@@ -288,4 +287,4 @@ private fun StatCard(
             )
         }
     }
-} 
+}

@@ -1,5 +1,6 @@
 package com.ankit.rental_cars_ui.presentation.screens.home
 
+import CarDetailScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -11,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.ankit.rental_cars_ui.presentation.components.CarList
 import com.ankit.rental_cars_ui.presentation.components.Pager
 import com.ankit.rental_cars_ui.presentation.components.TopBar
-import com.ankit.rental_cars_ui.presentation.screens.CarDetailScreen
+
 import com.ankit.rental_cars_ui.presentation.viewmodel.HomeEvent
 import com.ankit.rental_cars_ui.presentation.viewmodel.HomeState
 import dev.chrisbanes.haze.HazeState
