@@ -1,22 +1,21 @@
 package com.ankit.rental_cars_ui.presentation.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ankit.rental_cars_ui.data.datastore.SettingsDataStore
-
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import com.ankit.rental_cars_ui.domain.usecase.GetUserSettingsUseCase
+import com.ankit.rental_cars_ui.domain.usecase.UpdateUserSettingsUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val settingsDataStore: SettingsDataStore
+    private val getUserSettingsUseCase: GetUserSettingsUseCase,
+    private val updateUserSettingsUseCase: UpdateUserSettingsUseCase
 ) : ViewModel() {
 
-    var state by mutableStateOf(SettingsState())
-        private set
+    private val _state = MutableStateFlow(SettingsState())
+    val state = _state.asStateFlow()
 
     init {
         observeSettings()
@@ -26,34 +25,25 @@ class SettingsViewModel(
         when (event) {
             is SettingsEvent.ToggleDarkMode -> {
                 viewModelScope.launch {
-                    settingsDataStore.setDarkMode(event.enabled)
-                }
-            }
-            is SettingsEvent.ToggleNotifications -> {
-                viewModelScope.launch {
-                    settingsDataStore.setNotifications(event.enabled)
+                    updateUserSettingsUseCase(!state.value.isDarkMode)
                 }
             }
         }
     }
 
     private fun observeSettings() {
-        settingsDataStore.isDarkMode.onEach { isDarkMode ->
-            state = state.copy(isDarkMode = isDarkMode)
-        }.launchIn(viewModelScope)
-
-        settingsDataStore.isNotificationsEnabled.onEach { isNotificationsEnabled ->
-            state = state.copy(isNotificationsEnabled = isNotificationsEnabled)
-        }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            getUserSettingsUseCase().collect { isDarkMode ->
+                _state.update { it.copy(isDarkMode = isDarkMode) }
+            }
+        }
     }
 }
 
 data class SettingsState(
-    val isDarkMode: Boolean = false,
-    val isNotificationsEnabled: Boolean = true
+    val isDarkMode: Boolean = false
 )
 
 sealed class SettingsEvent {
-    data class ToggleDarkMode(val enabled: Boolean) : SettingsEvent()
-    data class ToggleNotifications(val enabled: Boolean) : SettingsEvent()
+    object ToggleDarkMode : SettingsEvent()
 } 

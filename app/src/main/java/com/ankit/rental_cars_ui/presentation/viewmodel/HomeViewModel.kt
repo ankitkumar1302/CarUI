@@ -3,14 +3,16 @@ package com.ankit.rental_cars_ui.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ankit.rental_cars_ui.domain.model.Car
-import com.ankit.rental_cars_ui.domain.repository.CarRepository
+import com.ankit.rental_cars_ui.domain.usecase.GetLuxuriousCarsUseCase
+import com.ankit.rental_cars_ui.domain.usecase.GetVipCarsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val carRepository: CarRepository
+    private val getLuxuriousCarsUseCase: GetLuxuriousCarsUseCase,
+    private val getVipCarsUseCase: GetVipCarsUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -34,7 +36,7 @@ class HomeViewModel(
 
     private fun getLuxuriousCars() {
         viewModelScope.launch {
-            carRepository.getLuxuriousCars().collect { cars ->
+            getLuxuriousCarsUseCase().collect { cars ->
                 _state.update { it.copy(luxuriousCars = cars) }
             }
         }
@@ -42,7 +44,7 @@ class HomeViewModel(
 
     private fun getVipCars() {
         viewModelScope.launch {
-            carRepository.getVipCars().collect { cars ->
+            getVipCarsUseCase().collect { cars ->
                 _state.update { it.copy(vipCars = cars) }
             }
         }

@@ -5,9 +5,7 @@ import com.ankit.rental_cars_ui.domain.repository.CarRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetLuxuriousCarsUseCase(
-    private val repository: CarRepository
+    private val carRepository: CarRepository
 ) {
-    operator fun invoke(): Flow<List<Car>> {
-        return repository.getLuxuriousCars()
-    }
+    operator fun invoke(): Flow<List<Car>> = carRepository.getLuxuriousCars()
 } 
