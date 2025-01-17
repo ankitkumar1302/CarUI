@@ -60,11 +60,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.ankit.rental_cars_ui.domain.model.Car
+import com.ankit.rental_cars_ui.domain.model.luxuriousCars
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
@@ -532,4 +534,15 @@ private fun FeatureItem(
             color = Color.Black
         )
     }
-} 
+}
+
+@Composable
+@Preview
+fun CarDetailScreenPreview() {
+    val car = luxuriousCars.first()
+    CarDetailScreen(
+        car = car,
+        onBackClick = {},
+        hazeState = HazeState()
+    )
+}
