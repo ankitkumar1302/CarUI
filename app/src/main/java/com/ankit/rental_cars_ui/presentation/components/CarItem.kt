@@ -129,17 +129,21 @@ fun Rating(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box {
-                Rater(
-                    image = car.recommenders[0]
-                )
-                Rater(
-                    modifier = Modifier.padding(start = 24.dp),
-                    image = car.recommenders[1]
-                )
-                Rater(
-                    modifier = Modifier.padding(start = 48.dp),
-                    image = car.recommenders[2]
-                )
+                car.recommenders.getOrNull(0)?.let { image ->
+                    Rater(image = image)
+                }
+                car.recommenders.getOrNull(1)?.let { image ->
+                    Rater(
+                        modifier = Modifier.padding(start = 24.dp),
+                        image = image
+                    )
+                }
+                car.recommenders.getOrNull(2)?.let { image ->
+                    Rater(
+                        modifier = Modifier.padding(start = 48.dp),
+                        image = image
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(10.dp))
@@ -147,7 +151,7 @@ fun Rating(
             Text(
                 text = car.recommendationRate.toString(),
                 fontSize = 20.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -155,7 +159,7 @@ fun Rating(
         Text(
             text = "${car.recommendation}% Recommended",
             fontSize = 12.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.SemiBold
         )
     }
