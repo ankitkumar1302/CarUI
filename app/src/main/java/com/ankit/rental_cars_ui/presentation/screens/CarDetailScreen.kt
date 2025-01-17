@@ -9,6 +9,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -54,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -375,39 +378,34 @@ fun CarDetailScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .systemBarsPadding()
-                    .background(Color.Black.copy(alpha = 0.5f)),
-//                    .haze(
-//                        state = hazeState,
-//                        style = HazeStyle(
-//                            blurRadius = 25.dp,
-//                            tint = Color.Black.copy(alpha = 0.3f)
-//                        )
-//                    ),
-                contentAlignment = Alignment.Center
+                    .background(Color.Black.copy(alpha = 0.3f))
+                    .testTag("dialog_background")
+                    .clickable { showRentDialog = false },
+                contentAlignment = Alignment.BottomCenter
             ) {
                 Surface(
                     modifier = Modifier
-                        .padding(24.dp)
-                        .fillMaxWidth(0.9f)
-                        .clip(RoundedCornerShape(28.dp)),
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .clip(RoundedCornerShape(32.dp)),
                     color = Color.White,
-                    tonalElevation = 8.dp
+                    tonalElevation = 2.dp
                 ) {
                     Column(
                         modifier = Modifier.padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Car Image in Dialog
+                        // Car Image
                         Image(
                             painter = painterResource(car.image),
                             contentDescription = null,
-                            modifier = Modifier
-                                .size(120.dp)
-                                .padding(bottom = 16.dp),
+                            modifier = Modifier.size(120.dp),
                             contentScale = ContentScale.Fit
                         )
 
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Title
                         Text(
                             text = "Rent ${car.name}",
                             fontSize = 24.sp,
@@ -417,6 +415,7 @@ fun CarDetailScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
+                        // Subtitle
                         Text(
                             text = "Premium Vehicle",
                             fontSize = 16.sp,
@@ -426,6 +425,7 @@ fun CarDetailScreen(
 
                         Spacer(modifier = Modifier.height(24.dp))
 
+                        // Price Section
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -434,12 +434,12 @@ fun CarDetailScreen(
                             Column {
                                 Text(
                                     text = "Total Amount",
-                                    fontSize = 16.sp,
+                                    fontSize = 14.sp,
                                     color = Color.Gray
                                 )
                                 Text(
                                     text = "$${car.price}",
-                                    fontSize = 32.sp,
+                                    fontSize = 28.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black
                                 )
@@ -448,25 +448,26 @@ fun CarDetailScreen(
                                 painter = painterResource(car.logo),
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size(40.dp)
+                                    .size(32.dp)
                                     .clip(CircleShape)
                                     .background(Color.White)
-                                    .padding(8.dp)
+                                    .padding(4.dp)
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
+                        // Buttons
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             TextButton(
                                 onClick = { showRentDialog = false },
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(56.dp),
-                                shape = RoundedCornerShape(28.dp)
+                                    .height(48.dp),
+                                shape = RoundedCornerShape(24.dp)
                             ) {
                                 Text(
                                     text = "Cancel",
@@ -475,22 +476,18 @@ fun CarDetailScreen(
                                 )
                             }
                             Button(
-                                onClick = {
-                                    showRentDialog = false
-                                    // Handle rent confirmation
-                                },
+                                onClick = { showRentDialog = false },
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(56.dp),
+                                    .height(48.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.Black
                                 ),
-                                shape = RoundedCornerShape(28.dp)
+                                shape = RoundedCornerShape(24.dp)
                             ) {
                                 Text(
                                     text = "Confirm",
                                     fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
                                     color = Color.White
                                 )
                             }
