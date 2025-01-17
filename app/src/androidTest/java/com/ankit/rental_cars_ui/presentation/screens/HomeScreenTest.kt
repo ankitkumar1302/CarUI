@@ -7,6 +7,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.ankit.rental_cars_ui.R
 import com.ankit.rental_cars_ui.domain.model.Car
+import com.ankit.rental_cars_ui.presentation.screens.home.HomeScreen
 import com.ankit.rental_cars_ui.presentation.viewmodel.HomeEvent
 import com.ankit.rental_cars_ui.presentation.viewmodel.HomeState
 import dev.chrisbanes.haze.HazeState

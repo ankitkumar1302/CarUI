@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,20 +16,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ankit.rental_cars_ui.presentation.components.TopBar
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeChild
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountScreen(hazeState: HazeState) {
+fun AccountScreen(
+    hazeState: HazeState,
+    scrollBehavior: TopAppBarScrollBehavior? = null
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1E1E1E))
+            .background(Color.Black)
     ) {
         // Background gradient
         Box(
@@ -37,177 +43,244 @@ fun AccountScreen(hazeState: HazeState) {
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF2C2C2C),
-                            Color(0xFF1E1E1E)
+                            Color(0xFF1A1A1A),
+                            Color.Black
                         )
                     )
                 )
         )
 
-        Column(
+        Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .systemBarsPadding()
-        ) {
-            // Top Section with Title
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = Color.Transparent
-            ) {
-                Column(
+                .then(
+                    if (scrollBehavior != null) {
+                        Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+                    } else {
+                        Modifier
+                    }
+                ),
+            containerColor = Color.Transparent,
+            topBar = {
+                Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 24.dp)
+                        .hazeChild(
+                            state = hazeState,
+                            style = HazeStyle(
+                                tint = Color.Black.copy(alpha = 0.4f),
+                                blurRadius = 20.dp
+                            )
+                        ),
+                    color = Color.Transparent
                 ) {
-                    Text(
-                        text = "My Profile",
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Manage your account details and preferences",
-                        fontSize = 16.sp,
-                        color = Color.White.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(top = 8.dp)
+                    @Composable
+                    fun TopBarActions() {
+                        IconButton(
+                            onClick = { },
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFF2A2A2A))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Edit,
+                                contentDescription = "Edit Profile",
+                                tint = Color.White
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(
+                            onClick = { },
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFF2A2A2A))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Settings,
+                                contentDescription = "Settings",
+                                tint = Color.White
+                            )
+                        }
+                    }
+
+                    TopBar(
+                        scrollBehavior = scrollBehavior,
+                        title = "Profile",
+                        actions = { TopBarActions() }
                     )
                 }
             }
-
+        ) { innerPadding ->
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(innerPadding),
+                contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Profile Card
                 item {
                     Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .hazeChild(hazeState),
+                        modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color.White.copy(alpha = 0.1f)
-                        ),
-                        shape = RoundedCornerShape(24.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.2f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.AccountCircle,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(60.dp),
-                                    tint = Color.White
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(20.dp))
-                            Column {
-                                Text(
-                                    text = "John Doe",
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                                Text(
-                                    text = "Premium Member",
-                                    fontSize = 16.sp,
-                                    color = Color.White.copy(alpha = 0.7f)
-                                )
-                                Text(
-                                    text = "Since 2024",
-                                    fontSize = 14.sp,
-                                    color = Color.White.copy(alpha = 0.5f),
-                                    modifier = Modifier.padding(top = 4.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Quick Actions Section
-                item {
-                    Text(
-                        text = "Quick Actions",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-
-                // Action Items
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .hazeChild(hazeState),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White.copy(alpha = 0.1f)
+                            containerColor = Color(0xFF1E1E1E)
                         ),
                         shape = RoundedCornerShape(24.dp)
                     ) {
                         Column(
-                            modifier = Modifier.padding(8.dp)
+                            modifier = Modifier.padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            ActionItem(
-                                icon = Icons.Default.Edit,
-                                title = "Edit Profile",
-                                subtitle = "Update your personal information"
+                            // Profile Image
+                            Box(
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF2196F3).copy(alpha = 0.2f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = null,
+                                    tint = Color(0xFF2196F3),
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "John Doe",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
                             )
-                            ActionItem(
-                                icon = Icons.Default.Settings,
-                                title = "Account Settings",
-                                subtitle = "Privacy and security options"
+                            Text(
+                                text = "Premium Member",
+                                fontSize = 14.sp,
+                                color = Color(0xFF2196F3)
                             )
-                            ActionItem(
-                                icon = Icons.Default.Payment,
-                                title = "Payment Methods",
-                                subtitle = "Manage your payment options"
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                StatItem(
+                                    value = "28",
+                                    label = "Rentals",
+                                    icon = Icons.Default.DirectionsCar,
+                                    color = Color(0xFF4CAF50)
+                                )
+                                StatItem(
+                                    value = "4.9",
+                                    label = "Rating",
+                                    icon = Icons.Default.Star,
+                                    color = Color(0xFFFFB300)
+                                )
+                                StatItem(
+                                    value = "12",
+                                    label = "Reviews",
+                                    icon = Icons.Default.RateReview,
+                                    color = Color(0xFFE91E63)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Quick Actions
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF1E1E1E)
+                        ),
+                        shape = RoundedCornerShape(24.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp)
+                        ) {
+                            Text(
+                                text = "Quick Actions",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                ActionItem(
+                                    icon = Icons.Default.Favorite,
+                                    label = "Favorites",
+                                    color = Color(0xFFE91E63)
+                                )
+                                ActionItem(
+                                    icon = Icons.Default.History,
+                                    label = "History",
+                                    color = Color(0xFF9C27B0)
+                                )
+                                ActionItem(
+                                    icon = Icons.Default.Payment,
+                                    label = "Payments",
+                                    color = Color(0xFF2196F3)
+                                )
+                                ActionItem(
+                                    icon = Icons.Default.Settings,
+                                    label = "Settings",
+                                    color = Color(0xFF4CAF50)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Activity Stats
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF1E1E1E)
+                        ),
+                        shape = RoundedCornerShape(24.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp)
+                        ) {
+                            Text(
+                                text = "Activity Stats",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            ActivityStatItem(
+                                title = "Total Distance",
+                                value = "2,450 km",
+                                icon = Icons.Default.Timeline,
+                                color = Color(0xFF2196F3)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            ActivityStatItem(
+                                title = "Total Savings",
+                                value = "$1,250",
+                                icon = Icons.Default.Savings,
+                                color = Color(0xFF4CAF50)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            ActivityStatItem(
+                                title = "Rental Duration",
+                                value = "45 days",
+                                icon = Icons.Default.Timer,
+                                color = Color(0xFFFF9800)
                             )
                         }
                     }
                 }
 
-                // Stats Section
+                // Bottom spacing
                 item {
-                    Text(
-                        text = "Activity Stats",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        StatCard(
-                            title = "12",
-                            subtitle = "Rentals",
-                            modifier = Modifier.weight(1f),
-                            hazeState = hazeState
-                        )
-                        StatCard(
-                            title = "5",
-                            subtitle = "Reviews",
-                            modifier = Modifier.weight(1f),
-                            hazeState = hazeState
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(80.dp))
                 }
             }
         }
@@ -215,75 +288,113 @@ fun AccountScreen(hazeState: HazeState) {
 }
 
 @Composable
-private fun ActionItem(
+private fun StatItem(
+    value: String,
+    label: String,
     icon: ImageVector,
-    title: String,
-    subtitle: String
+    color: Color
 ) {
-    ListItem(
-        headlineContent = {
-            Text(
-                text = title,
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-        },
-        supportingContent = {
-            Text(
-                text = subtitle,
-                color = Color.White.copy(alpha = 0.7f),
-                fontSize = 14.sp
-            )
-        },
-        leadingContent = {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(color.copy(alpha = 0.2f)),
+            contentAlignment = Alignment.Center
+        ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Color.White,
+                tint = color,
                 modifier = Modifier.size(24.dp)
             )
-        },
-        trailingContent = {
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = null,
-                tint = Color.White.copy(alpha = 0.7f)
-            )
         }
-    )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = value,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            color = Color.White.copy(alpha = 0.7f)
+        )
+    }
 }
 
 @Composable
-private fun StatCard(
-    title: String,
-    subtitle: String,
-    modifier: Modifier = Modifier,
-    hazeState: HazeState
+private fun ActionItem(
+    icon: ImageVector,
+    label: String,
+    color: Color
 ) {
-    Card(
-        modifier = modifier.hazeChild(hazeState),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.1f)
-        ),
-        shape = RoundedCornerShape(24.dp)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .size(56.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(color.copy(alpha = 0.2f)),
+            contentAlignment = Alignment.Center
         ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            color = Color.White.copy(alpha = 0.7f)
+        )
+    }
+}
+
+@Composable
+private fun ActivityStatItem(
+    title: String,
+    value: String,
+    icon: ImageVector,
+    color: Color
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(color.copy(alpha = 0.2f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                fontSize = 16.sp,
+                color = Color.White.copy(alpha = 0.7f)
             )
             Text(
-                text = subtitle,
-                fontSize = 14.sp,
-                color = Color.White.copy(alpha = 0.7f)
+                text = value,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.ankit.rental_cars_ui.presentation
 
+import CarDetailScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,14 +28,15 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ankit.rental_cars_ui.presentation.components.BottomBar
 import com.ankit.rental_cars_ui.presentation.screens.home.HomeScreen
+
 import com.ankit.rental_cars_ui.presentation.screens.account.AccountScreen
 import com.ankit.rental_cars_ui.presentation.screens.analytic.AnalyticsScreen
 import com.ankit.rental_cars_ui.presentation.screens.setting.SettingsScreen
+
+import com.ankit.rental_cars_ui.presentation.viewmodel.HomeEvent
 import com.ankit.rental_cars_ui.presentation.viewmodel.HomeViewModel
 import com.ankit.rental_cars_ui.ui.theme.RentalCarsUITheme
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.hazeChild
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -77,7 +78,8 @@ class MainActivity : ComponentActivity() {
                                 onEvent = homeViewModel::onEvent,
                                 hazeState = hazeState,
                                 scrollBehavior = scrollBehavior,
-                                isFirstLaunch = isFirstLaunch
+                                isFirstLaunch = isFirstLaunch,
+                                navController = navController
                             )
                         }
                         composable("account") {
@@ -89,9 +91,21 @@ class MainActivity : ComponentActivity() {
                         composable("settings") {
                             SettingsScreen(hazeState = hazeState)
                         }
+                        composable("car_detail") {
+                            homeState.selectedCar?.let { car ->
+                                CarDetailScreen(
+                                    car = car,
+                                    hazeState = hazeState,
+                                    onBackClick = {
+                                        homeViewModel.onEvent(HomeEvent.CarSelected(null))
+                                        navController.popBackStack()
+                                    }
+                                )
+                            }
+                        }
                     }
 
-                    if (homeState.selectedCar == null) {
+                    if (currentRoute != "car_detail") {
                         Box(
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
@@ -100,7 +114,7 @@ class MainActivity : ComponentActivity() {
                                     Brush.verticalGradient(
                                         colors = listOf(
                                             Color.Transparent,
-                                            Color.Black.copy(alpha = 0.05f)
+                                            Color(0xFF1E1E1E)
                                         ),
                                         startY = 0f,
                                         endY = Float.POSITIVE_INFINITY
@@ -111,6 +125,7 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.fillMaxWidth(),
                                 hazeState = hazeState,
                                 currentRoute = currentRoute,
+                                isHomeScreen = currentRoute == "home",
                                 onNavigate = { index ->
                                     val route = when (index) {
                                         0 -> "home"
@@ -120,24 +135,9 @@ class MainActivity : ComponentActivity() {
                                         else -> "home"
                                     }
                                     navController.navigate(route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
                                         launchSingleTop = true
-                                        restoreState = true
                                     }
                                 }
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .hazeChild(
-                                        state = hazeState,
-                                        style = HazeStyle(
-                                            tint = Color.Black.copy(alpha = 0.1f),
-                                            blurRadius = 20.dp
-                                        )
-                                    )
                             )
                         }
                     }

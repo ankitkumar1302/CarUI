@@ -37,10 +37,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,57 +71,16 @@ fun CarDetailScreen(
     onBackClick: () -> Unit,
     hazeState: HazeState
 ) {
-    var isImageLoaded by remember { mutableStateOf(false) }
     var isFavorite by remember { mutableStateOf(false) }
     var showRentDialog by remember { mutableStateOf(false) }
-
-    val imageScale = remember { Animatable(0.8f) }
-    val imageAlpha = remember { Animatable(0f) }
-    val floatingOffset = remember { Animatable(0f) }
-    val favoriteScale = remember { Animatable(1f) }
-    val contentAlpha = remember { Animatable(0f) }
-
-    LaunchedEffect(Unit) {
-        imageScale.animateTo(
-            targetValue = 1f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow
-            )
-        )
-
-        imageAlpha.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(500)
-        )
-
-        contentAlpha.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(500, delayMillis = 300)
-        )
-
-        floatingOffset.animateTo(
-            targetValue = -10f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(2000, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
-            )
-        )
-        isImageLoaded = true
-    }
-
-    LaunchedEffect(isFavorite) {
-        favoriteScale.animateTo(
-            targetValue = 0.8f,
-            animationSpec = tween(100)
-        )
-        favoriteScale.animateTo(
-            targetValue = 1f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow
-            )
-        )
+    val scrollState = rememberScrollState()
+    
+    // Calculate scroll progress
+    val scrollProgress by remember {
+        derivedStateOf {
+            if (scrollState.maxValue == 0) 0f
+            else scrollState.value.toFloat() / scrollState.maxValue
+        }
     }
 
     Box(
@@ -148,7 +109,7 @@ fun CarDetailScreen(
                     .fillMaxWidth()
                     .fillMaxHeight(0.5f)
                     .graphicsLayer { 
-                        alpha = 0.15f  // Reduced opacity
+                        alpha = 0.15f - (scrollProgress * 0.1f)
                     }
                     .haze(
                         state = hazeState,
@@ -165,61 +126,76 @@ fun CarDetailScreen(
                 .fillMaxSize()
                 .systemBarsPadding()
         ) {
-            // Top Actions Row
-            Row(
+            // Top Actions Row with Progress
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(16.dp)
             ) {
-                IconButton(
-                    onClick = onBackClick,
+                // Progress Bar
+                LinearProgressIndicator(
+                    progress = scrollProgress,
                     modifier = Modifier
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.2f))
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
-
+                        .fillMaxWidth()
+                        .height(2.dp)
+                        .clip(RoundedCornerShape(1.dp))
+                        .align(Alignment.TopCenter),
+                    color = Color.White,
+                    trackColor = Color.White.copy(alpha = 0.2f)
+                )
+                
+                // Actions Row
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
-                        onClick = { isFavorite = !isFavorite },
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.2f))
-                            .graphicsLayer {
-                                scaleX = favoriteScale.value
-                                scaleY = favoriteScale.value
-                            }
-                    ) {
-                        Icon(
-                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                            contentDescription = "Favorite",
-                            tint = if (isFavorite) Color.Red else Color.White
-                        )
-                    }
-                    IconButton(
-                        onClick = { /* Handle share */ },
+                        onClick = onBackClick,
                         modifier = Modifier
                             .clip(CircleShape)
                             .background(Color.White.copy(alpha = 0.2f))
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Share,
-                            contentDescription = "Share",
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = "Back",
                             tint = Color.White
                         )
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        IconButton(
+                            onClick = { isFavorite = !isFavorite },
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.2f))
+                        ) {
+                            Icon(
+                                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                contentDescription = "Favorite",
+                                tint = if (isFavorite) Color.Red else Color.White
+                            )
+                        }
+                        IconButton(
+                            onClick = { /* Handle share */ },
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.2f))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Share,
+                                contentDescription = "Share",
+                                tint = Color.White
+                            )
+                        }
                     }
                 }
             }
 
-            // Car Image Container
+            // Car Image Container with Scroll Effect
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -234,31 +210,29 @@ fun CarDetailScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.95f)
                         .graphicsLayer {
-                            scaleX = imageScale.value
-                            scaleY = imageScale.value
-                            alpha = imageAlpha.value
-                            translationY = floatingOffset.value
+                            // Scale and fade effect based on scroll
+                            val scale = 1f - (scrollProgress * 0.2f)
+                            scaleX = scale
+                            scaleY = scale
+                            alpha = 1f - (scrollProgress * 0.5f)
                         }
                 )
             }
 
-            // Content Section
+            // Content Section with Scroll Animation
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .graphicsLayer { 
-                        alpha = contentAlpha.value 
-                        translationY = (1f - contentAlpha.value) * 50f
+                    .graphicsLayer {
+                        // Slide up effect based on scroll
+                        translationY = -scrollProgress * 50f
                     },
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
                 color = Color(0xFF1E1E1E)
             ) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    val scrollState = rememberScrollState()
-
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -266,9 +240,13 @@ fun CarDetailScreen(
                             .padding(horizontal = 24.dp)
                             .padding(top = 32.dp, bottom = 100.dp)
                     ) {
-                        // Car Info Header
+                        // Car Info Header with Fade In
                         Column(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .graphicsLayer {
+                                    alpha = 1f - (scrollProgress * 0.5f)
+                                },
                             horizontalAlignment = Alignment.Start
                         ) {
                             Text(
@@ -361,7 +339,7 @@ fun CarDetailScreen(
                         )
                     }
 
-                    // Bottom Button (Simplified)
+                    // Bottom Button with Gradient
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
@@ -399,8 +377,6 @@ fun CarDetailScreen(
             }
         }
     }
-
-    // ... rest of the dialog code remains the same ...
 }
 
 @Composable

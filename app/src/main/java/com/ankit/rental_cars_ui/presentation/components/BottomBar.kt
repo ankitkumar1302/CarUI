@@ -6,10 +6,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.LibraryBooks
-import androidx.compose.material.icons.rounded.AccountBox
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -31,7 +28,8 @@ fun BottomBar(
     modifier: Modifier = Modifier,
     onNavigate: (Int) -> Unit = {},
     hazeState: HazeState,
-    currentRoute: String = "home"
+    currentRoute: String = "home",
+    isHomeScreen: Boolean = true
 ) {
     val selectedIndex = when (currentRoute) {
         "home" -> 0
@@ -48,7 +46,8 @@ fun BottomBar(
                 Brush.verticalGradient(
                     colors = listOf(
                         Color.Transparent,
-                        Color.Black.copy(alpha = 0.08f)
+                        Color(0xFF1A1A1A).copy(alpha = 0.95f),
+                        Color(0xFF1A1A1A)
                     ),
                     startY = 0f,
                     endY = Float.POSITIVE_INFINITY
@@ -62,11 +61,12 @@ fun BottomBar(
                 .hazeChild(
                     state = hazeState,
                     style = HazeStyle(
-                        tint = Color.Black.copy(alpha = 0.08f),
+                        tint = Color(0xFF1A1A1A).copy(alpha = 0.8f),
                         blurRadius = 16.dp
                     )
                 ),
-            containerColor = Color.White.copy(alpha = 0.03f),
+            containerColor = Color.Transparent,
+            contentColor = Color.White,
             tonalElevation = 0.dp,
             windowInsets = WindowInsets(0)
         ) {
@@ -101,7 +101,7 @@ fun BottomBar(
                                 tint = if (selected) 
                                     Color.White 
                                 else 
-                                    Color.White.copy(alpha = 0.35f)
+                                    Color.White.copy(alpha = 0.5f)
                             )
                         }
                     },
@@ -109,15 +109,15 @@ fun BottomBar(
                         Text(
                             text = item.title,
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (selected) Color.White else Color.White.copy(alpha = 0.35f)
+                            color = if (selected) Color.White else Color.White.copy(alpha = 0.5f)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color.White,
-                        unselectedIconColor = Color.White.copy(alpha = 0.35f),
+                        unselectedIconColor = Color.White.copy(alpha = 0.5f),
                         selectedTextColor = Color.White,
-                        unselectedTextColor = Color.White.copy(alpha = 0.35f),
-                        indicatorColor = Color.Transparent
+                        unselectedTextColor = Color.White.copy(alpha = 0.5f),
+                        indicatorColor = Color(0xFF2A2A2A)
                     ),
                     interactionSource = remember { MutableInteractionSource() }
                 )
@@ -134,19 +134,19 @@ data class BottomBarItem(
 val bottomBarItems = listOf(
     BottomBarItem(
         title = "Home",
-        icon = Icons.Rounded.Home
+        icon = Icons.Default.Home
     ),
     BottomBarItem(
         title = "Account",
-        icon = Icons.Rounded.AccountBox
+        icon = Icons.Default.Person
     ),
     BottomBarItem(
         title = "Analytics",
-        icon = Icons.AutoMirrored.Rounded.LibraryBooks
+        icon = Icons.Default.Analytics
     ),
     BottomBarItem(
         title = "Settings",
-        icon = Icons.Rounded.Settings
+        icon = Icons.Default.Settings
     )
 )
 
