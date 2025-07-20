@@ -22,6 +22,10 @@ import androidx.navigation.NavController
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,7 +116,30 @@ fun HomeScreen(
                 ) {
                     Column {
                         TopBar(
-                            scrollBehavior = scrollBehavior
+                            scrollBehavior = scrollBehavior,
+                            actions = {
+                                IconButton(onClick = { navController.navigate("search") }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Search,
+                                        contentDescription = "Search",
+                                        tint = Color(0xFFFFD700)
+                                    )
+                                }
+                                IconButton(onClick = { navController.navigate("favorites") }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.FavoriteBorder,
+                                        contentDescription = "Favorites",
+                                        tint = Color(0xFFFFD700)
+                                    )
+                                }
+                                IconButton(onClick = { navController.navigate("booking_history") }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Receipt,
+                                        contentDescription = "Bookings",
+                                        tint = Color(0xFFFFD700)
+                                    )
+                                }
+                            }
                         )
                         if (!state.isLoading) {
                             Surface(

@@ -69,7 +69,8 @@ import dev.chrisbanes.haze.haze
 fun CarDetailScreen(
     car: Car,
     onBackClick: () -> Unit,
-    hazeState: HazeState
+    hazeState: HazeState,
+    onBookClick: () -> Unit = {}
 ) {
     var isFavorite by remember { mutableStateOf(false) }
     var showRentDialog by remember { mutableStateOf(false) }
@@ -356,7 +357,7 @@ fun CarDetailScreen(
                             .padding(horizontal = 24.dp, vertical = 16.dp)
                     ) {
                         Button(
-                            onClick = { showRentDialog = true },
+                            onClick = onBookClick,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
@@ -367,7 +368,7 @@ fun CarDetailScreen(
                             shape = RoundedCornerShape(28.dp)
                         ) {
                             Text(
-                                text = "Rent Now",
+                                text = "Book Now",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
