@@ -574,7 +574,9 @@ fun BookingScreen(
                 TextButton(
                     onClick = {
                         showConfirmDialog = false
-                        navController.navigate("payment/${car.id}/$totalPrice")
+                        // TODO: Navigate to payment screen
+                        // For now, navigate back with success
+                        navController.popBackStack()
                     }
                 ) {
                     Text("Confirm", color = Color(0xFFFFD700))
@@ -599,6 +601,45 @@ fun BookingScreen(
             containerColor = Color(0xFF2A2A2A),
             titleContentColor = Color.White,
             textContentColor = Color.Gray
+        )
+    }
+
+    // Date Picker Dialogs - simplified implementation
+    if (showStartDatePicker) {
+        AlertDialog(
+            onDismissRequest = { showStartDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = { showStartDatePicker = false }) {
+                    Text("OK", color = Color(0xFFFFD700))
+                }
+            },
+            title = { Text("Select Start Date", color = Color.White) },
+            text = { 
+                Text(
+                    "Date picker would be implemented here.\nCurrently selected: ${selectedStartDate.format(dateFormatter)}",
+                    color = Color.Gray
+                )
+            },
+            containerColor = Color(0xFF2A2A2A)
+        )
+    }
+
+    if (showEndDatePicker) {
+        AlertDialog(
+            onDismissRequest = { showEndDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = { showEndDatePicker = false }) {
+                    Text("OK", color = Color(0xFFFFD700))
+                }
+            },
+            title = { Text("Select End Date", color = Color.White) },
+            text = { 
+                Text(
+                    "Date picker would be implemented here.\nCurrently selected: ${selectedEndDate.format(dateFormatter)}",
+                    color = Color.Gray
+                )
+            },
+            containerColor = Color(0xFF2A2A2A)
         )
     }
 }
