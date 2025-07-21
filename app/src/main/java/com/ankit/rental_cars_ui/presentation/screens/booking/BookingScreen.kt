@@ -50,9 +50,11 @@ fun BookingScreen(
     var addGPS by remember { mutableStateOf(false) }
     var addChildSeat by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-    val totalDays = ChronoUnit.DAYS.between(selectedStartDate, selectedEndDate).toInt() + 1
+    val totalDays = maxOf(1, ChronoUnit.DAYS.between(selectedStartDate, selectedEndDate).toInt())
     val basePrice = car.price * totalDays
     val insurancePrice = if (addInsurance) 50 * totalDays else 0
     val gpsPrice = if (addGPS) 15 * totalDays else 0
@@ -541,8 +543,19 @@ fun BookingScreen(
                 // Book Button
                 Button(
                     onClick = { 
-                        if (pickupLocation.isNotBlank() && dropoffLocation.isNotBlank()) {
-                            showConfirmDialog = true
+                        when {
+                            pickupLocation.isBlank() -> {
+                                errorMessage = "Please enter a pickup location"
+                            }
+                            dropoffLocation.isBlank() -> {
+                                errorMessage = "Please enter a drop-off location"
+                            }
+                            !selectedEndDate.isAfter(selectedStartDate) -> {
+                                errorMessage = "Drop-off date must be after pickup date"
+                            }
+                            else -> {
+                                showConfirmDialog = true
+                            }
                         }
                     },
                     modifier = Modifier
@@ -641,5 +654,32 @@ fun BookingScreen(
             },
             containerColor = Color(0xFF2A2A2A)
         )
+    }
+
+    // Snackbar Host for error messages
+    Box(modifier = Modifier.fillMaxSize()) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter),
+            snackbar = { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = Color(0xFF2A2A2A),
+                    contentColor = Color.White,
+                    actionColor = Color(0xFFFFD700)
+                )
+            }
+        )
+    }
+
+    // Show error message in snackbar
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(
+                message = it,
+                duration = SnackbarDuration.Short
+            )
+            errorMessage = null
+        }
     }
 }
