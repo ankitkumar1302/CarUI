@@ -6,9 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,13 +42,12 @@ import com.ankit.rental_cars_ui.presentation.screens.booking.BookingHistoryScree
 import com.ankit.rental_cars_ui.presentation.screens.search.SearchScreen
 import com.ankit.rental_cars_ui.presentation.screens.favorites.FavoritesScreen
 import com.ankit.rental_cars_ui.presentation.screens.notifications.NotificationsScreen
-import com.ankit.rental_cars_ui.domain.model.luxuriousCars
-import com.ankit.rental_cars_ui.domain.model.vipCars
 import com.ankit.rental_cars_ui.presentation.viewmodel.HomeEvent
 import com.ankit.rental_cars_ui.presentation.viewmodel.HomeViewModel
 import com.ankit.rental_cars_ui.ui.theme.RentalCarsUITheme
 import dev.chrisbanes.haze.HazeState
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
 
@@ -126,13 +131,44 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("booking/{carId}") { backStackEntry ->
                             val carId = backStackEntry.arguments?.getString("carId")
-                            val car = (luxuriousCars + vipCars).find { it.id == carId }
-                            car?.let {
+                            val homeState by homeViewModel.state.collectAsState()
+                            
+                            // First try to get the car from selectedCar if it matches the ID
+                            val car = if (homeState.selectedCar?.id == carId) {
+                                homeState.selectedCar
+                            } else {
+                                // Otherwise, look in the ViewModel's car lists
+                                (homeState.luxuriousCars + homeState.vipCars).find { it.id == carId }
+                            }
+                            
+                            if (car != null) {
                                 BookingScreen(
-                                    car = it,
+                                    car = car,
                                     navController = navController,
                                     hazeState = hazeState
                                 )
+                            } else {
+                                // Handle case where car is not found
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Car not found",
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            color = Color.White
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Button(
+                                            onClick = { navController.popBackStack() }
+                                        ) {
+                                            Text("Go Back")
+                                        }
+                                    }
+                                }
                             }
                         }
                         composable("booking_history") {
