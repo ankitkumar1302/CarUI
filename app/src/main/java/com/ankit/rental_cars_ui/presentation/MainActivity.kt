@@ -1,6 +1,5 @@
 package com.ankit.rental_cars_ui.presentation
 
-import CarDetailScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,11 +27,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ankit.rental_cars_ui.presentation.components.BottomBar
 import com.ankit.rental_cars_ui.presentation.screens.home.HomeScreen
-
+import com.ankit.rental_cars_ui.presentation.screens.home.CarDetailScreen
 import com.ankit.rental_cars_ui.presentation.screens.account.AccountScreen
 import com.ankit.rental_cars_ui.presentation.screens.analytic.AnalyticsScreen
 import com.ankit.rental_cars_ui.presentation.screens.setting.SettingsScreen
-
+import com.ankit.rental_cars_ui.presentation.screens.booking.BookingScreen
+import com.ankit.rental_cars_ui.presentation.screens.booking.BookingHistoryScreen
+import com.ankit.rental_cars_ui.presentation.screens.search.SearchScreen
+import com.ankit.rental_cars_ui.presentation.screens.favorites.FavoritesScreen
+import com.ankit.rental_cars_ui.presentation.screens.notifications.NotificationsScreen
+import com.ankit.rental_cars_ui.domain.model.luxuriousCars
+import com.ankit.rental_cars_ui.domain.model.vipCars
 import com.ankit.rental_cars_ui.presentation.viewmodel.HomeEvent
 import com.ankit.rental_cars_ui.presentation.viewmodel.HomeViewModel
 import com.ankit.rental_cars_ui.ui.theme.RentalCarsUITheme
@@ -83,7 +88,10 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("account") {
-                            AccountScreen(hazeState = hazeState)
+                            AccountScreen(
+                                hazeState = hazeState,
+                                navController = navController
+                            )
                         }
                         composable("analytics") {
                             AnalyticsScreen(hazeState = hazeState)
@@ -99,13 +107,59 @@ class MainActivity : ComponentActivity() {
                                     onBackClick = {
                                         homeViewModel.onEvent(HomeEvent.CarSelected(null))
                                         navController.popBackStack()
+                                    },
+                                    onBookClick = {
+                                        navController.navigate("booking/${car.id}")
                                     }
                                 )
                             }
                         }
+                        composable("search") {
+                            SearchScreen(
+                                navController = navController,
+                                hazeState = hazeState,
+                                onCarClick = { car ->
+                                    homeViewModel.onEvent(HomeEvent.CarSelected(car))
+                                    navController.navigate("car_detail")
+                                }
+                            )
+                        }
+                        composable("booking/{carId}") { backStackEntry ->
+                            val carId = backStackEntry.arguments?.getString("carId")
+                            val car = (luxuriousCars + vipCars).find { it.id == carId }
+                            car?.let {
+                                BookingScreen(
+                                    car = it,
+                                    navController = navController,
+                                    hazeState = hazeState
+                                )
+                            }
+                        }
+                        composable("booking_history") {
+                            BookingHistoryScreen(
+                                navController = navController,
+                                hazeState = hazeState
+                            )
+                        }
+                        composable("favorites") {
+                            FavoritesScreen(
+                                navController = navController,
+                                hazeState = hazeState,
+                                onCarClick = { car ->
+                                    homeViewModel.onEvent(HomeEvent.CarSelected(car))
+                                    navController.navigate("car_detail")
+                                }
+                            )
+                        }
+                        composable("notifications") {
+                            NotificationsScreen(
+                                navController = navController,
+                                hazeState = hazeState
+                            )
+                        }
                     }
 
-                    if (currentRoute != "car_detail") {
+                    if (currentRoute in listOf("home", "account", "analytics", "settings")) {
                         Box(
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)

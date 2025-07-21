@@ -1,6 +1,7 @@
 package com.ankit.rental_cars_ui.presentation.screens.account
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -29,7 +30,8 @@ import dev.chrisbanes.haze.hazeChild
 @Composable
 fun AccountScreen(
     hazeState: HazeState,
-    scrollBehavior: TopAppBarScrollBehavior? = null
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    navController: androidx.navigation.NavController? = null
 ) {
     Box(
         modifier = Modifier
@@ -90,7 +92,20 @@ fun AccountScreen(
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         IconButton(
-                            onClick = { },
+                            onClick = { navController?.navigate("notifications") },
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFF2A2A2A))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Notifications,
+                                contentDescription = "Notifications",
+                                tint = Color.White
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(
+                            onClick = { navController?.navigate("settings") },
                             modifier = Modifier
                                 .padding(end = 8.dp)
                                 .clip(RoundedCornerShape(12.dp))
@@ -213,12 +228,14 @@ fun AccountScreen(
                                 ActionItem(
                                     icon = Icons.Default.Favorite,
                                     label = "Favorites",
-                                    color = Color(0xFFE91E63)
+                                    color = Color(0xFFE91E63),
+                                    onClick = { navController?.navigate("favorites") }
                                 )
                                 ActionItem(
                                     icon = Icons.Default.History,
                                     label = "History",
-                                    color = Color(0xFF9C27B0)
+                                    color = Color(0xFF9C27B0),
+                                    onClick = { navController?.navigate("booking_history") }
                                 )
                                 ActionItem(
                                     icon = Icons.Default.Payment,
@@ -228,7 +245,8 @@ fun AccountScreen(
                                 ActionItem(
                                     icon = Icons.Default.Settings,
                                     label = "Settings",
-                                    color = Color(0xFF4CAF50)
+                                    color = Color(0xFF4CAF50),
+                                    onClick = { navController?.navigate("settings") }
                                 )
                             }
                         }
@@ -330,10 +348,12 @@ private fun StatItem(
 private fun ActionItem(
     icon: ImageVector,
     label: String,
-    color: Color
+    color: Color,
+    onClick: () -> Unit = {}
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClick() }
     ) {
         Box(
             modifier = Modifier
