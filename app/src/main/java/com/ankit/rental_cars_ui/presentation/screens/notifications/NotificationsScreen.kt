@@ -27,6 +27,9 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeChild
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 
 data class Notification(
     val id: Int,
@@ -258,9 +261,9 @@ private fun NotificationItem(
     onMarkAsRead: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val dismissState = rememberDismissState(
+    val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { dismissValue ->
-            if (dismissValue == DismissValue.DismissedToStart) {
+            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
                 onDelete()
                 true
             } else {
@@ -269,10 +272,10 @@ private fun NotificationItem(
         }
     )
 
-    SwipeToDismiss(
+    SwipeToDismissBox(
         state = dismissState,
-        directions = setOf(DismissDirection.EndToStart),
-        background = {
+        enableDismissFromStartToEnd = false,
+        backgroundContent = {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -290,101 +293,107 @@ private fun NotificationItem(
                 )
             }
         },
-        dismissContent = {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        if (!notification.isRead) {
-                            onMarkAsRead()
-                        }
-                    },
-                colors = CardDefaults.cardColors(
-                    containerColor = if (!notification.isRead) Color(0xFF2A2A2A) else Color(0xFF1E1E1E)
-                ),
-                shape = RoundedCornerShape(16.dp)
+        content = {
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
-                Row(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        .clickable {
+                            if (!notification.isRead) {
+                                onMarkAsRead()
+                            }
+                        },
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (!notification.isRead) Color(0xFF2A2A2A) else Color(0xFF1E1E1E)
+                    ),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    // Icon
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(
-                                when (notification.type) {
-                                    NotificationType.BOOKING_CONFIRMED -> Color(0xFF4CAF50).copy(alpha = 0.2f)
-                                    NotificationType.BOOKING_REMINDER -> Color(0xFF2196F3).copy(alpha = 0.2f)
-                                    NotificationType.PROMOTION -> Color(0xFFFFD700).copy(alpha = 0.2f)
-                                    NotificationType.SYSTEM -> Color(0xFF9E9E9E).copy(alpha = 0.2f)
-                                    NotificationType.REVIEW_REQUEST -> Color(0xFF9C27B0).copy(alpha = 0.2f)
-                                }
-                            ),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Icon(
-                            imageVector = when (notification.type) {
-                                NotificationType.BOOKING_CONFIRMED -> Icons.Rounded.CheckCircle
-                                NotificationType.BOOKING_REMINDER -> Icons.Rounded.Schedule
-                                NotificationType.PROMOTION -> Icons.Rounded.LocalOffer
-                                NotificationType.SYSTEM -> Icons.Rounded.Info
-                                NotificationType.REVIEW_REQUEST -> Icons.Rounded.Star
-                            },
-                            contentDescription = null,
-                            tint = when (notification.type) {
-                                NotificationType.BOOKING_CONFIRMED -> Color(0xFF4CAF50)
-                                NotificationType.BOOKING_REMINDER -> Color(0xFF2196F3)
-                                NotificationType.PROMOTION -> Color(0xFFFFD700)
-                                NotificationType.SYSTEM -> Color(0xFF9E9E9E)
-                                NotificationType.REVIEW_REQUEST -> Color(0xFF9C27B0)
-                            },
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-
-                    // Content
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.Top
+                        // Icon
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    when (notification.type) {
+                                        NotificationType.BOOKING_CONFIRMED -> Color(0xFF4CAF50).copy(alpha = 0.2f)
+                                        NotificationType.BOOKING_REMINDER -> Color(0xFF2196F3).copy(alpha = 0.2f)
+                                        NotificationType.PROMOTION -> Color(0xFFFFD700).copy(alpha = 0.2f)
+                                        NotificationType.SYSTEM -> Color(0xFF9E9E9E).copy(alpha = 0.2f)
+                                        NotificationType.REVIEW_REQUEST -> Color(0xFF9C27B0).copy(alpha = 0.2f)
+                                    }
+                                ),
+                            contentAlignment = Alignment.Center
                         ) {
+                            Icon(
+                                imageVector = when (notification.type) {
+                                    NotificationType.BOOKING_CONFIRMED -> Icons.Rounded.CheckCircle
+                                    NotificationType.BOOKING_REMINDER -> Icons.Rounded.Schedule
+                                    NotificationType.PROMOTION -> Icons.Rounded.LocalOffer
+                                    NotificationType.SYSTEM -> Icons.Rounded.Info
+                                    NotificationType.REVIEW_REQUEST -> Icons.Rounded.Star
+                                },
+                                contentDescription = null,
+                                tint = when (notification.type) {
+                                    NotificationType.BOOKING_CONFIRMED -> Color(0xFF4CAF50)
+                                    NotificationType.BOOKING_REMINDER -> Color(0xFF2196F3)
+                                    NotificationType.PROMOTION -> Color(0xFFFFD700)
+                                    NotificationType.SYSTEM -> Color(0xFF9E9E9E)
+                                    NotificationType.REVIEW_REQUEST -> Color(0xFF9C27B0)
+                                },
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        // Content
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Text(
+                                    text = notification.title,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                
+                                if (!notification.isRead) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0xFFFFD700))
+                                    )
+                                }
+                            }
+                            
                             Text(
-                                text = notification.title,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                modifier = Modifier.weight(1f)
+                                text = notification.message,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Gray
                             )
                             
-                            if (!notification.isRead) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(0xFFFFD700))
-                                )
-                            }
+                            Text(
+                                text = formatTimestamp(notification.timestamp),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.Gray.copy(alpha = 0.7f)
+                            )
                         }
-                        
-                        Text(
-                            text = notification.message,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
-                        )
-                        
-                        Text(
-                            text = formatTimestamp(notification.timestamp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.Gray.copy(alpha = 0.7f)
-                        )
                     }
                 }
             }
